@@ -20,8 +20,13 @@
     WebSocket.prototype.send = function(data) {
         if (boosting && data instanceof ArrayBuffer) {
             var view = new DataView(data);
+            
+            // Check if the packet matches the speed-boosting packet structure
             if (view.byteLength === 2) {
-                view.setUint8(1, 255); // Modify acceleration packet
+                view.setUint8(1, 255);  // Set max acceleration
+
+                // 🛠️ **Hack to prevent length reduction**
+                view.setUint8(0, 0);  // Modify another part of the packet (anti-length reduction trick)
             }
         }
         return originalSend.apply(this, arguments);
